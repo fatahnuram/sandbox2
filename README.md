@@ -9,3 +9,9 @@ Run:
 ```bash
 go run main.go
 ```
+
+Then try to hit your web server:
+
+```bash
+curl -v localhost:8080
+```
