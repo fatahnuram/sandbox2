@@ -17,6 +17,9 @@ func doMore(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// HandleFunc can be used when you want/need to control the request life-time
+	// i.e. you don't need any chaining/middleware/other processing
+	// executes this function and that's it
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("hello world!"))
 	})
@@ -24,6 +27,9 @@ func main() {
 	http.HandleFunc("/one", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("nothing more"))
 	})
+
+	// Handle can be used when you want/need to pass the executions to the
+	// processing chain i.e. middleware before it finally got sent back to client
 	http.Handle("/two", func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("inside the Handler first")
