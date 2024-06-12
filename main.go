@@ -16,6 +16,16 @@ func doMore(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("after Handler"))
 }
 
+func isEven(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if time.Now().Second()%2 == 0 {
+			h.ServeHTTP(w, r)
+			return
+		}
+		http.Error(w, "current second is odd, cannot serve the response", http.StatusInternalServerError)
+	})
+}
+
 func main() {
 	// HandleFunc can be used when you want/need to control the request life-time
 	// i.e. you don't need any chaining/middleware/other processing
@@ -36,6 +46,7 @@ func main() {
 			h.ServeHTTP(w, r)
 		})
 	}(http.HandlerFunc(doMore)))
+	http.Handle("/iseven", isEven(http.HandlerFunc(getTime)))
 
 	log.Println("web server started at localhost:8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
