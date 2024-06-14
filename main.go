@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
+	"path"
+	"strings"
 )
 
 type mymux struct{}
@@ -24,8 +26,13 @@ func (m *mymux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	next.ServeHTTP(w, r)
 }
 
-func shiftPath(path string) (string, string) {
-	return "", path
+func shiftPath(p string) (string, string) {
+	p = path.Clean("/" + p)
+	i := strings.Index(p[1:], "/") + 1
+	if i <= 0 {
+		return p[1:], "/"
+	}
+	return p[1:i], p[i:]
 }
 
 func one(w http.ResponseWriter, r *http.Request) {
