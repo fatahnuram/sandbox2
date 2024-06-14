@@ -26,6 +26,16 @@ func isEven(h http.Handler) http.Handler {
 	})
 }
 
+func one(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("one\n"))
+}
+func two(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("two\n"))
+}
+func three(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("three\n"))
+}
+
 func main() {
 	// HandleFunc can be used when you want/need to control the request life-time
 	// i.e. you don't need any chaining/middleware/other processing
@@ -37,6 +47,10 @@ func main() {
 	http.HandleFunc("/one", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("nothing more"))
 	})
+
+	http.HandleFunc("/route/one", one)
+	http.HandleFunc("/second/route/here", two)
+	http.HandleFunc("/ok/", three)
 
 	// Handle can be used when you want/need to pass the executions to the
 	// processing chain i.e. middleware before it finally got sent back to client
