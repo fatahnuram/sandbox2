@@ -1,11 +1,16 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"path"
 	"strings"
 	"time"
+)
+
+const (
+	CTX_PATH_WIP = "path-is-wip"
 )
 
 type StatusResponseWriter struct {
@@ -45,6 +50,14 @@ func withLogger(next http.Handler) http.Handler {
 		start := time.Now()
 		next.ServeHTTP(srw, r)
 		end := time.Since(start)
-		fmt.Printf("%s %d %s %v\n", r.Method, srw.Status, srw.OriginalPath, end)
+		wipMsg := r.Context().Value(CTX_PATH_WIP)
+		fmt.Printf("%s %d %s %v %v\n", r.Method, srw.Status, srw.OriginalPath, end, wipMsg)
+	})
+}
+
+func wipContext(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), CTX_PATH_WIP, "this path is still on progress")
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
