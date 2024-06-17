@@ -14,6 +14,6 @@ func (u *User) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (u *User) home(w http.ResponseWriter, r *http.Request) {
+func (u *User) home(w http.ResponseWriter, _ *http.Request) {
 	w.Write([]byte("user home handler\n"))
 }
