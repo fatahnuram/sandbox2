@@ -18,6 +18,8 @@ func (u *User) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		u.home(w, r)
 	} else if head == "echo" {
 		u.echo(w, r)
+	} else if head == "demo" {
+		u.demo(w, r)
 	} else {
 		http.Error(w, "user path not found", http.StatusNotFound)
 	}
@@ -36,4 +38,13 @@ func (u *User) echo(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	w.Write([]byte(fmt.Sprintf("%s is %d years old\n", demo.Name, demo.Age)))
+}
+
+func (u *User) demo(w http.ResponseWriter, _ *http.Request) {
+	d := User{Name: "Carlos", Age: 33}
+	w.Header().Add("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(d); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
