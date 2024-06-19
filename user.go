@@ -2,13 +2,12 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
 type User struct {
-	Name string `json:name`
-	Age  int    `json:age`
+	Name string `json:"name"`
+	Age  int    `json:"age"`
 }
 
 func (u *User) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -31,13 +30,12 @@ func (u *User) home(w http.ResponseWriter, _ *http.Request) {
 
 func (u *User) echo(w http.ResponseWriter, r *http.Request) {
 	var demo User
-	if err := json.NewDecoder(r.Body).Decode(&demo); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if err := parseBody(r.Body, &demo); err != nil {
+		respond(w, r, http.StatusBadRequest, err)
 		return
 	}
-	defer r.Body.Close()
 
-	w.Write([]byte(fmt.Sprintf("%s is %d years old\n", demo.Name, demo.Age)))
+	respond(w, r, http.StatusOK, demo)
 }
 
 func (u *User) demo(w http.ResponseWriter, _ *http.Request) {

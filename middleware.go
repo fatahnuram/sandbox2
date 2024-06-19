@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"path"
-	"strings"
 	"time"
 )
 
@@ -29,15 +27,6 @@ func (w *StatusResponseWriter) Write(b []byte) (int, error) {
 		w.Status = http.StatusOK
 	}
 	return w.ResponseWriter.Write(b)
-}
-
-func shiftPath(p string) (string, string) {
-	p = path.Clean("/" + p)
-	i := strings.Index(p[1:], "/") + 1
-	if i <= 0 {
-		return p[1:], "/"
-	}
-	return p[1:i], p[i:]
 }
 
 func withLogger(next http.Handler) http.Handler {
