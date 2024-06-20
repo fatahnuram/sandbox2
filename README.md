@@ -7,7 +7,7 @@ Following `Build SaaS apps in Go` by `Dominic St-Pierre`.
 Run:
 
 ```bash
-go run .
+go run cmd/main.go
 ```
 
 Then try to hit your web server:
@@ -21,7 +21,7 @@ curl -v localhost:8080
 Run:
 
 ```bash
-go build -o svc
+go build -o svc ./cmd/main.go
 ```
 
 Then run your app:
