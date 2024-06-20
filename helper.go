@@ -1,10 +1,11 @@
-package main
+package sandbox2
 
 import (
 	"encoding/json"
 	"io"
 	"net/http"
 	"path"
+	"sandbox2/middleware"
 	"strings"
 )
 
@@ -13,7 +14,12 @@ type CustomError struct {
 	Error  string `json:"error"`
 }
 
-func shiftPath(p string) (string, string) {
+type Message struct {
+	Status string `json:"status"`
+	Msg    string `json:"msg"`
+}
+
+func ShiftPath(p string) (string, string) {
 	p = path.Clean("/" + p)
 	i := strings.Index(p[1:], "/") + 1
 	if i <= 0 {
@@ -22,12 +28,21 @@ func shiftPath(p string) (string, string) {
 	return p[1:i], p[i:]
 }
 
-func respond(w http.ResponseWriter, _ *http.Request, status int, data interface{}) error {
+func Respond(w http.ResponseWriter, r *http.Request, status int, data interface{}) error {
 	// wrap error as json
 	if e, ok := data.(error); ok {
 		tmp := CustomError{}
 		tmp.Status = "error"
 		tmp.Error = e.Error()
+		data = tmp
+	}
+
+	// wrap one-line msg as json
+	if s, ok := data.(string); ok {
+		tmp := Message{
+			Status: "ok",
+			Msg:    s,
+		}
 		data = tmp
 	}
 
@@ -41,10 +56,11 @@ func respond(w http.ResponseWriter, _ *http.Request, status int, data interface{
 	w.WriteHeader(status)
 	w.Write(resp)
 
+	middleware.LogRequest(r, status)
 	return nil
 }
 
-func parseBody(body io.ReadCloser, result interface{}) error {
+func ParseBody(body io.ReadCloser, result interface{}) error {
 	defer body.Close()
 	decoder := json.NewDecoder(body)
 	return decoder.Decode(result)

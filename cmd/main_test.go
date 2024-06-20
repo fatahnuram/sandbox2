@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"sandbox2"
+	"testing"
+)
 
 func TestShiftPath(t *testing.T) {
 	suites := []struct {
@@ -16,7 +19,7 @@ func TestShiftPath(t *testing.T) {
 
 	for _, suite := range suites {
 		t.Run(suite.name, func(t *testing.T) {
-			head, tail := shiftPath(suite.path)
+			head, tail := sandbox2.ShiftPath(suite.path)
 
 			if head != suite.want[0] {
 				t.Errorf("incorrect parsed head, want: %v, got: %v", suite.want[0], head)
